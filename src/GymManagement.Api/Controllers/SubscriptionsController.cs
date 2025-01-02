@@ -27,7 +27,11 @@ public class SubscriptionsController : ControllerBase
     public async Task<IActionResult> CreateSubscriptionAsync([FromBody] CreateSubscriptionRequest request)
     {
         var command = new CreateSubscriptionCommand(request.SubscriptionType.ToString(), request.AdminId);
-        var subscriptionId = await _mediator.Send(command);
-        return Ok(new SubscriptionResponse(subscriptionId, request.SubscriptionType));
+        var createSubscriptionResult = await _mediator.Send(command);
+
+        return createSubscriptionResult.Match(
+            guid => Ok(new SubscriptionResponse(guid, request.SubscriptionType)),
+            errors => Problem()
+        );
     }
 }

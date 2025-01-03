@@ -7,16 +7,19 @@ namespace GymManagement.Application.Commands;
 
 public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscriptionCommand, ErrorOr<Subscription>>
 {
+    private readonly IUnitOfWork _unitOfWork;
     private readonly ISubscriptionsRespository _subscriptionRepository;
 
-    public CreateSubscriptionCommandHandler(ISubscriptionsRespository subscriptionRepository)
+    public CreateSubscriptionCommandHandler(ISubscriptionsRespository subscriptionRepository, IUnitOfWork unitOfWork)
     {
+        _unitOfWork = unitOfWork;
         _subscriptionRepository = subscriptionRepository;
     }
     public async Task<ErrorOr<Subscription>> Handle(CreateSubscriptionCommand request, CancellationToken cancellationToken)
     {
         var subscription = new Subscription { Id = Guid.NewGuid() };
-        await _subscriptionRepository.AddSubscriptionAsync(subscription);
+        await _subscriptionRepository.AddSubscriptionAsync(subscription, cancellationToken);
+        await _unitOfWork.CommitChangesAsync(cancellationToken);
         return await Task.FromResult(subscription);
     }
 }

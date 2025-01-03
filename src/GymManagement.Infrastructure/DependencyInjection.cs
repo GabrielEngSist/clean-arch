@@ -10,7 +10,7 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        services.AddSingleton<ISubscriptionsRespository, SubscriptionsRepository>();
+        services.AddScoped<ISubscriptionsRespository, SubscriptionsRepository>();
         services.AddDbContext<GymManagementDbContext>(
             options => { options.UseSqlite("Data Source=GymManagement.db"); }
         );

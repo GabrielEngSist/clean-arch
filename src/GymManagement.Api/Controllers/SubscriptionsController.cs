@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using GymManagement.Contracts.Subscriptions;
 using MediatR;
 using GymManagement.Application.Commands;
+using GymManagement.Application.Queries;
 
 namespace GymManagement.Api.Controllers;
 
@@ -16,17 +17,23 @@ public class SubscriptionsController : ControllerBase
         _mediator = mediator;
     }
 
-    [HttpGet]
-    public async Task<IActionResult> GetSubscriptionsAsync()
+    [HttpGet("{subscriptionId:guid}")]
+    public async Task<IActionResult> GetSubscriptionsAsync([FromRoute] Guid subscriptionId)
     {
-        // Placeholder for actual implementation
-        return await Task.FromResult(Ok(new List<string> { "Subscription1", "Subscription2" }));
+        var query = new GetSubscription(subscriptionId);
+        var getSusbcriptionResult = await _mediator.Send(query);
+
+        return getSusbcriptionResult.Match(
+            subscription => Ok(new SubscriptionResponse(subscription.Id, Enum.Parse<SubscriptionType>(subscription.SubscriptionType))),
+            errors => Problem()
+        );
     }
 
     [HttpPost]
     public async Task<IActionResult> CreateSubscriptionAsync([FromBody] CreateSubscriptionRequest request)
     {
-        var command = new CreateSubscriptionCommand(request.SubscriptionType.ToString(), request.AdminId);
+        var command = new CreateSubscriptionCommand(
+            request.SubscriptionType.ToString(), request.AdminId);
         var createSubscriptionResult = await _mediator.Send(command);
 
         return createSubscriptionResult.Match(

@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddDbContext<GymManagementDbContext>(
             options => { options.UseSqlite("Data Source=GymManagement.db"); }
         );
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<GymManagementDbContext>());
         return services;
     }
 }

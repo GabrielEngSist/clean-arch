@@ -19,7 +19,6 @@ public class SubscriptionsRepository : ISubscriptionsRespository
     public async Task AddSubscriptionAsync(Subscription subscription, CancellationToken cancellationToken = default)
     {
         await _dbContext.AddAsync(subscription, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<Subscription?> GetSubscriptionByIdAsync(Guid id, CancellationToken cancellationToken = default)

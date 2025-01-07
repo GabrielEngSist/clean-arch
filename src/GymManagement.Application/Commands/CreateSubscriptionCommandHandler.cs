@@ -17,11 +17,7 @@ public class CreateSubscriptionCommandHandler : IRequestHandler<CreateSubscripti
     }
     public async Task<ErrorOr<Subscription>> Handle(CreateSubscriptionCommand request, CancellationToken cancellationToken)
     {
-        var subscription = new Subscription
-        {
-            Id = Guid.NewGuid(),
-            SubscriptionType = request.SubscriptionType
-        };
+        var subscription = new Subscription(request.SubscriptionType, request.AdminId);
 
         await _subscriptionRepository.AddSubscriptionAsync(subscription, cancellationToken);
         await _unitOfWork.CommitChangesAsync(cancellationToken);
